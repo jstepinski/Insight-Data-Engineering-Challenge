@@ -132,9 +132,13 @@ The general algorithm for updating the graph is the following:
 Finally, let us examine a graph representation.
 
 ![ScreenShot](https://raw.github.com/jstepinski/Insight-Data-Engineering-Challenge/graphDisp.PNG)
-Insight-Data-Engineering-Challenge/graphDisp.PNG
+
+The above is printed when the program is called with "10" as the 4th input, i.e. it is the graph after 10 lines of the input file have been processed. In this case, the input file is that given in the challenge.
+We can see that there are 6 entries in the table, or 6 nodes in the graph. In one case, the recorded length is 0, but the actual length is 4. The median degree is the median of the actual lengths, in this case of {2,3,3,3,4,5}, which is 3.
 
 # Median Algorithms
+
+
 
 # Input Parsing
 
