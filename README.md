@@ -69,11 +69,11 @@ The entries - which we will henceforth call cells even though a cell may contain
 The branches between nodes are the linked lists.
 A linked list appears in memory as follows:
 
-| header |
-|   ptr  | name | timeStamp |
-    ...
-|   ptr  | name | timeStamp |
-|  NULL  |
+	| header |
+	|   ptr  | name | timeStamp |
+	    ...
+	|   ptr  | name | timeStamp |
+	|  NULL  |
 
 Each line in the above diagram is a "block" in the source code.
 We proceed down the list by dereferencing ptr's, as we did in the hash table.
@@ -107,7 +107,7 @@ That second huge advantage of the hash table should now be clear. That is, the a
 The general algorithm for updating the graph is the following:
 
 	parse an input line into the actor A, target T, and timestamp
-	if the timestamp is too old, continue to the next line
+	if the timestamp is too old, continue to the next line, but first record the median
 	find the cell of A (cellA) in the table
 	find the cell of T (cellT) in the table
 	
@@ -138,7 +138,37 @@ We can see that there are 6 entries in the table, or 6 nodes in the graph. In on
 
 # Median Algorithms
 
+The naive method is the slow method. In the final step of the above algorithm, after the table has been rehashed and the graph updated, the median is computed. First we allocate memory for an array whose size is the number of nodes. Then we go through all the nodes and put their actual lengths into the array. Then we sort the array. Finally we extract the median.
+This method is slow because of the need to create a new array in the heap each time - its size could always be different. Then we have to sort it.
 
+There is a MUCH faster method.
+First, create an array in the heap whose initial size is specified in the venmoGraphParams header. Make it a GLOBAL array.
+The indices of this array correspond to frequencies of degrees (actual list lengths).
+Index 0 holds the frequency of degree 1.
+Index 1 holds the frequency of degree 2.
+And so on.
+The linked lists are structs with their actual lengths as properties. They cost very little to extract and increment.
+In the "list" library, there is an "incLenAct" function. 
+The name is short for increment length actual.
+Its arguments are the length and the increment. 
+When a length change, we decrement its frequency in the global frequency array and increment the frequency of the new length.
+	If the new length exceeds the size of the frequency array, the array must be realloced. 
+	This operation must be performed very carefully so that we can properly free the array when the program completes. 
+	First we use realloc to copy the existing data to a new, larger block of memory. We store the pointer to this memory in temp.
+	Then we use calloc to allocate and immediately zero a block of memory of identical size.
+	We store that address back in our global frequency array.
+	Then we move the old data into the new address from temp and free temp.
+	This allows us to free the global array when the program completes.
+The reallocation can be costly, but the size is doubled each time, so it will not be performed often.
+After every input line, we compute the median degree using the frequencies of all the degrees.
+
+With the naive method, the average total time for computing the medians of the 1792 lines in the sample input file is about 0.06 seconds on my Intel i7 CPU.
+With the fast method described above, the average total time is so low that it is displayed as 0 to 12 decimal places. 
+That is a huge improvement.
+
+But having the two methods allows me to verify that I am computing the correct median.
 
 # Input Parsing
+
+The input parser is contained in main.c.
 
