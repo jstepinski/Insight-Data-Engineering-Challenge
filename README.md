@@ -131,9 +131,10 @@ The general algorithm for updating the graph is the following:
 
 Finally, let us examine a graph representation.
 
-![ScreenShot](https://raw.github.com/jstepinski/Insight-Data-Engineering-Challenge/graphDisp.PNG)
+https://cloud.githubusercontent.com/assets/20405323/16753703/e89e6214-47b9-11e6-82b0-0a1e591368d2.PNG
 
 The above is printed when the program is called with "10" as the 4th input, i.e. it is the graph after 10 lines of the input file have been processed. In this case, the input file is that given in the challenge.
+Note that the timestamps are stored as unsigned long integers. The conversion from the time code in the venmo input is performed in the parser.
 We can see that there are 6 entries in the table, or 6 nodes in the graph. In one case, the recorded length is 0, but the actual length is 4. The median degree is the median of the actual lengths, in this case of {2,3,3,3,4,5}, which is 3.
 
 # Median Algorithms
@@ -177,8 +178,10 @@ Its core is the following two lines:
 	
 	sscanf(str, "{\"created_time\": \"%d-%d-%dT%d:%d:%dZ\", \"target\": \"%[^\"]\", \"actor\": \"%[^\"]", &year, &month, &day, &hour, &minute, &second, target, actor);
 
-If the format string is not matched precisely, the parser either returns a timeStamp equal to 0 or an empty actor or target string.
-So in the main algorithm, I use
+The year, month, day, hour, minute, and second are used to create a C time struct. The struct also requires one to specify whether daylight savings time is in effect; fortunately, the "Z" in the time code stands for Zulu time, which is UTC, which has no daylight savings period. The struct can then be passed to the mktime function of the time.h standard library to create an unsigned long int.
+
+If the format string in sscanf is not matched precisely, the parser either returns a timeStamp equal to 0 or an empty actor or target string.
+Then in the main algorithm, I use
 
 	if (actor[0]=='\0' || target[0]=='\0' || *time==0)
 		continue;
