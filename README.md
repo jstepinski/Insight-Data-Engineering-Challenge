@@ -171,4 +171,32 @@ But having the two methods allows me to verify that I am computing the correct m
 # Input Parsing
 
 The input parser is contained in main.c.
+Its core is the following two lines:
 
+	int year = -1, month = -1, day = -1, hour = -1, minute = -1, second = -1;
+	
+	sscanf(str, "{\"created_time\": \"%d-%d-%dT%d:%d:%dZ\", \"target\": \"%[^\"]\", \"actor\": \"%[^\"]", &year, &month, &day, &hour, &minute, &second, target, actor);
+
+If the format string is not matched precisely, the parser either returns a timeStamp equal to 0 or an empty actor or target string.
+So in the main algorithm, I use
+
+	if (actor[0]=='\0' || target[0]=='\0' || *time==0)
+		continue;
+
+That way we completely skip faulty inputs.
+The following are some examples of faulty inputs:
+
+	{"created_time": "2016-03-28T23:23:15Z", "target": "Caroline-Kaiser-2", "actor": ""}
+	{"created_time": "2016-03-28T23:23:15Z", "target": "Caroline-Kaiser-2", "actor"}
+	{"created_time": "2016-03-28T23:23:15Z", "target": "", "actor": "Amber-Sauer"}
+	{"created_time": "2016-03-28T23:23:15Z", "target": "charlotte-macfarlane"}
+	{"created_time": "2016-03-28T23:23:15Z", "actor": "Raffi-Antilian"}
+	{"creaWRONGted_time": "2016-03-28T23:23:15Z", "target": "charlotte-macfarlane", "actor": "Raffi-Antilian"}
+	{"created_time": "201603-28T23:23:15Z", "target": "charlotte-macfarlane", "actor": "Caroline-Kaiser-2"}
+	{"created_time": "2016-03-28T2323:15Z", "target": "Raffi-Antilian", "actor": "Amber-Sauer"}
+	{"created_time": "2016-03-2823:23:15Z", "target": "Raffi-Antilian", "actor": "Amber-Sauer"}
+	{"": "2016-03-28T23:23:15Z", "target": "Raffi-Antilian", "actor": "Amber-Sauer"}
+	{"2016-03-28T23:23:15Z", "target": "Raffi-Antilian", "actor": "Amber-Sauer"}
+	"created_time": "2016-03-28T23:23:15Z", "target": "Raffi-Antilian", "actor": "Amber-Sauer"}
+	
+Empty actors or targets, improperly formatted time codes, stray characters, missing quotes or brackts - any of these constitutes a faulty input that is skipped.
