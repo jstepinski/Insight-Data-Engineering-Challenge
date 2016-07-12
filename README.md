@@ -69,6 +69,70 @@ The entries - which we will henceforth call cells even though a cell may contain
 The branches between nodes are the linked lists.
 A linked list appears in memory as follows:
 
+| header |
+|   ptr  | name | timeStamp |
+    ...
+|   ptr  | name | timeStamp |
+|  NULL  |
+
+Each line in the above diagram is a "block" in the source code.
+We proceed down the list by dereferencing ptr's, as we did in the hash table.
+Unlike the hash table, where new entries are put in the same cell on top of one another, here new blocks are inserted so that they are ordered chronologically, with the most recent at the top. That way we can remove multiple blocks simultaneously if we encounter just one that falls outside our 60 second window as we proceed from the top.
+The "names" in the list are all the nodes that connect to the entry in the hash table that stores the list.
+That is, if person "A" is the "key" in the table, and his list contains names "B", "C", and "D", then node A has three branches, one to B, one to C, and one to D.
+
+A possible representation of the graph now becomes apparent. Each entry of the table has a list, and the length of the list gives the "degree" of the graph's "node." As an input file is read, new entries can be added to the table and the lists, and old entries can be removed using the timeStamp to update the degrees.
+
+But this is not the representation used in my program.
+Because processing it is expensive in both memory and time.
+It is expensive in memory because every "name" is stored twice. That is, if A is connected to B, both A and B have entries in the table, and A has B in its list, and B has A in its list. This is redundant. 
+Because of that redundancy in memory, this representation is also slow to update. 
+
+My representation avoids these redundancies and further improves speed.
+
+Firstly, I keep track of two different list lengths. There is the actual length and the recorded length. The recorded length is the length of the list actually stored in memory. The actual length is the actual length. 
+Consider a simple example, the transaction between A and B. 
+Both get their entries in the table.
+In the list of A, I put B and the timestamp. So for A, the recorded and actual lengths are both 1.
+But then I don't give B a list. Instead I simply increment its actual length. So its recorded lenght is 0, and its actual length is 1.
+Memory usage is therefore halved.
+Furthermore, I do not store actual strings in the lists. 
+In the table, the "key" is the actual char array. 
+But in the list, the "name" is a char**, the address of the char array in the table.
+Suppose I want to remove the branch between A and B because their timestamp is too old. 
+I go into the list of A. I find the char** of B. Then I use that char** to erase B from the table while I'm still in A's list!
+
+That second huge advantage of the hash table should now be clear. That is, the addresses of the cells in the table may change, but the addresses of the keys and lists REMAIN CONSTANT even after rehashing. So I can always access the table entry of B from its char** in the list of A.
+
+The general algorithm for updating the graph is the following:
+
+	parse an input line into the actor A, target T, and timestamp
+	if the timestamp is too old, continue to the next line
+	find the cell of A (cellA) in the table
+	find the cell of T (cellT) in the table
+	
+	if cellA doesn't exist yet, make an empty list for A (LA) and put it in the table
+		otherwise extract LA from the table
+	if cellT doesn't exist yet, make an empty list for T (LT) and put it in the table
+		otherwise extract LT from the table
+	
+	check whether A and T already have a branch between them
+	if they do, update the timestamp if it is newer
+	if they do not, put T in the list of A
+		this will increase the actual length of both A and T, but the recorded length only of A
+	
+	check the load of the table, and rehash if necessary
+	
+	update the graph by pruning any other branches and nodes of older transactions
+		use the fast method described above
+		note that updating the graph must be performed AFTER the table is rehashed
+	
+	compute the new median degree as the median of the actual lengths of the entries of the cells
+
+Finally, let us examine 
+
+
+
 
 # Median Algorithms
 
