@@ -132,7 +132,7 @@ The general algorithm for updating the graph is the following:
 Finally, let us examine a graph representation.
 
 ![ScreenShot](https://raw.github.com/jstepinski/Insight-Data-Engineering-Challenge/graphDisp.PNG)
-
+Insight-Data-Engineering-Challenge/graphDisp.PNG
 
 # Median Algorithms
 
