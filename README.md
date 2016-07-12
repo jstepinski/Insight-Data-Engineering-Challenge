@@ -129,7 +129,9 @@ The general algorithm for updating the graph is the following:
 	
 	compute the new median degree as the median of the actual lengths of the entries of the cells
 
-Finally, let us examine 
+Finally, let us examine a graph representation.
+
+![Alt text](/Insight-Data-Engineering-Challenge/graphDisp.PNG?raw=true)
 
 
 
