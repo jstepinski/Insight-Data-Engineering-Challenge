@@ -131,7 +131,7 @@ The general algorithm for updating the graph is the following:
 
 Finally, let us examine a graph representation.
 
-https://cloud.githubusercontent.com/assets/20405323/16753703/e89e6214-47b9-11e6-82b0-0a1e591368d2.PNG
+![ScreenShot](https://cloud.githubusercontent.com/assets/20405323/16753703/e89e6214-47b9-11e6-82b0-0a1e591368d2.PNG)
 
 The above is printed when the program is called with "10" as the 4th input, i.e. it is the graph after 10 lines of the input file have been processed. In this case, the input file is that given in the challenge.
 Note that the timestamps are stored as unsigned long integers. The conversion from the time code in the venmo input is performed in the parser.
