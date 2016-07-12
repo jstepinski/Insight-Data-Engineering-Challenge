@@ -19,9 +19,15 @@ Anywhere from 0 to 4, inclusive, inputs are allowed. 0 inputs mean that the defa
 	
 	The second input is the output file. The default is "output.txt".
 	
-	The third input specifies the algorithm used for computing the median. Only entries 1 (slow) and 2 (fast) are accepted. The algorithms are explained in detail in the "Median Algorithms" section of this readme. The default is 2.
+	The third input specifies the algorithm used for computing the median. 
+	Only entries 1 (slow) and 2 (fast) are accepted. 
+	The algorithms are explained in detail in the "Median Algorithms" section of this readme. 
+	The default is 2.
 	
-	The fourth input allows you to print the graph after a specific line from the input file has been evaluated. For example, 1031 would mean that the graph is printed after 1031 lines of the input file have been evaluated. The "Graph" section of this readme explaines how to interpret the printout. The default is 0, so the graph is not printed.
+	The fourth input allows you to print the graph after a specific line from the input file has been evaluated. 
+	For example, 1031 would mean that the graph is printed after 1031 lines of the input file have been evaluated. 
+	The "Graph" section of this readme explaines how to interpret the printout. 
+	The default is 0, so the graph is not printed.
 
 The source code is distributed among several files:
 	list.h
@@ -52,6 +58,16 @@ This also means that multiple entries are put on top of the table rather than ap
 
 Ultimately, every entry in the table is a unique string (the key) extracted from the input file. So the table contains the nodes of the graph.
 
+There are two huge advantages of using a hash table to store nodes.
+
+The first is scalability. If each node were stored as an element in an array, there would be a limit to the number of possible nodes. This limit is the largest integer that can be represented in binary. Even with only 32 bits, that number is huge. But it is a limit. A hash table can store multiple entries within a single cell. The only limit is RAM. So if RAM is added, the number of nodes can hypothetically increase forever. Again, that limit is highly unlikely to be attained in the 60 second window of this problem, but other problems requiring graphs might.
+
+Dereferencing and dereferencing pointers becomes slow after a while. So we compute the load of the table as the ratio of entries to the number of cells. If the ratio exceeds a maximum load, usually between 0.75 and 1.5, the table expands. This is called rehashing. When it is rehashed, entries might be moved to new cells. So their ptr's change. But the rehashing is performed in such a way that the addresses of the keys and the lists REMAIN CONSTANT.
+That is the second huge advantage of the hash table. Why it is so advantageous will become clear shortly.
+
+The entries - which we will henceforth call cells even though a cell may contain multiple entries - of the table are graph nodes. 
+The branches between nodes are the linked lists.
+A linked list appears in memory as follows:
 
 
 # Median Algorithms
