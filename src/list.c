@@ -153,6 +153,8 @@ void List_put(List* L, void* keyAddr, void* datum) {
 int* List_lenActFreq;
 int  List_lenActFreq_size = INIT_MAX_LEN;
 
+// Note that the global array cannot be initialized here. It must be initialized via a call from main
+
 void List_lenActFreq_initalize() {
 	List_lenActFreq = calloc(List_lenActFreq_size, sizeof(int)); // use calloc to ensure all entries are 0
 }
