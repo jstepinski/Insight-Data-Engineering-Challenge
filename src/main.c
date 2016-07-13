@@ -490,37 +490,11 @@ int main(int argc, char* argv[]) {
 				keyT = table_getKey(cellT);
 			}
 			
-			// The following block of commented-out code was in my original submission.
-			// It was designed to test whether the target had already traded with the actor.
-			// But it does not test whether the actor had already traded with the target.
-			// So the following two lines of input:
-			//			{"created_time": "2016-03-28T23:23:12Z", "target": "T", "actor": "A"}
-			// 			{"created_time": "2016-03-28T23:23:12Z", "target": "A", "actor": "T"}
-			// would not crash the program, but they would produce a wrong median.
-			// The new code following the commented block tests for and accomodates this scenario
-			
-			/*
-			checkBlock = List_getBlock(LA, keyT);
-			checkTime = 0;
-			
-			// We are checking if T already exists in A's list
-			// If it does, that means A and T have already traded, so we get the timestamp of that trade.
+			// Now we want to check if T already exists in A's list, and if A exists in T's
+			// If one of the two cases holds, we get the timestamp of the trade
 			// Then if the current timestamp is more recent, we update the trade with the current timestamp.
 			// Before doing so, we remove the old trade (if possible), because the "List_put" function adds
 			// trades to a list chronologically.
-			if (checkBlock != NULL) {
-				checkTime = **(unsigned long int**)List_getDatum(LA, checkBlock);
-			}
-			
-			if (*time > checkTime) {
-				if (checkBlock != NULL) {
-					List_remove(LA, checkBlock);
-					List_incLenAct(LT, -1);
-				}
-				List_put(LA, &keyT, &time);
-				List_incLenAct(LT, 1);
-			}
-			*/
 			
 			checkBlockA = List_getBlock(LA, keyT);
 			checkBlockT = List_getBlock(LT, keyA);
